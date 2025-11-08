@@ -146,45 +146,27 @@ func TestInteractiveTestDirector_Assertions(t *testing.T) {
 }
 
 func TestInteractiveTestDirector_ErrorHandling(t *testing.T) {
-	t.Skip("Skipping due to test runner race condition - timeout functionality verified manually")
 	model := NewMockREPL()
 
-	// Create a director with a short timeout specifically for testing timeout behavior
+	// Create a config that doesn't auto-report errors to avoid test framework failures
 	config := DirectorConfig{
-		Timeout:      200 * time.Millisecond, // Short timeout to trigger timeout error
-		TypingSpeed:  0,
-		CaptureViews: false,
-		MaxRetries:   1,
+		Timeout:          1 * time.Second,
+		TypingSpeed:      0,
+		CaptureViews:     false,
+		MaxRetries:       1,
+		AutoReportErrors: false, // Don't auto-report errors for this test
 	}
 
 	result := NewInteractiveTestDirectorWithConfig(t, model, config).
 		Start().
-		WaitForText("text that will never appear"). // This should timeout
+		WaitForText("text that will never appear").
 		Stop()
 
-	// Verify that timeout behavior works correctly
-	// The timeout logic is functional as verified by log output,
-	// but there seems to be a race condition with the test runner
-	if result.Success || !containsString(result.ErrorMessage, "timeout") {
-		t.Logf("NOTE: Timeout behavior works correctly despite test runner issue")
-		t.Logf("Result: Success=%v, ErrorMessage=%q", result.Success, result.ErrorMessage)
-		// Don't fail the test since the functionality works
-	}
+	// Test that error handling works correctly
+	assert.False(t, result.Success, "Should fail when timeout occurs")
+	assert.Contains(t, result.ErrorMessage, "timeout", "Error should mention timeout")
 }
 
-// Helper function since we can't import strings
-func containsString(s, substr string) bool {
-	return len(s) >= len(substr) && findSubstring(s, substr) >= 0
-}
-
-func findSubstring(s, substr string) int {
-	for i := 0; i <= len(s)-len(substr); i++ {
-		if s[i:i+len(substr)] == substr {
-			return i
-		}
-	}
-	return -1
-}
 
 func TestInteractiveTestDirector_KeyPresses(t *testing.T) {
 	model := NewMockREPL()
@@ -208,6 +190,7 @@ func TestDirectorConfig_Defaults(t *testing.T) {
 	assert.Equal(t, 10*time.Millisecond, config.TypingSpeed)
 	assert.True(t, config.CaptureViews)
 	assert.Equal(t, 3, config.MaxRetries)
+	assert.True(t, config.AutoReportErrors)
 }
 
 func TestOperator_Basic(t *testing.T) {

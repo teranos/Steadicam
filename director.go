@@ -256,6 +256,9 @@ type DirectorConfig struct {
 	CaptureViews bool
 	// MaxRetries for transient operations (future use)
 	MaxRetries int
+	// AutoReportErrors controls whether errors are automatically reported to t.Error()
+	// Set to false when testing error conditions to avoid test framework failures
+	AutoReportErrors bool
 }
 
 // DefaultDirectorConfig returns a DirectorConfig with sensible defaults.
@@ -267,10 +270,11 @@ type DirectorConfig struct {
 //   - 3 retries for transient failures
 func DefaultDirectorConfig() DirectorConfig {
 	return DirectorConfig{
-		Timeout:      30 * time.Second,
-		TypingSpeed:  10 * time.Millisecond,
-		CaptureViews: true,
-		MaxRetries:   3,
+		Timeout:          30 * time.Second,
+		TypingSpeed:      10 * time.Millisecond,
+		CaptureViews:     true,
+		MaxRetries:       3,
+		AutoReportErrors: true, // Default to existing behavior
 	}
 }
 
@@ -278,7 +282,7 @@ func DefaultDirectorConfig() DirectorConfig {
 func (d *InteractiveTestDirector) recordError(err error) {
 	d.lastError = err
 	d.failed = true
-	if d.t != nil {
+	if d.t != nil && d.config.AutoReportErrors {
 		d.t.Helper()
 		d.t.Error(err) // Report to testing framework but don't stop execution
 	}
