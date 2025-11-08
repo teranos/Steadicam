@@ -177,7 +177,7 @@ func TestDirectorConfig_Defaults(t *testing.T) {
 	config := DefaultDirectorConfig()
 
 	assert.Equal(t, 30*time.Second, config.Timeout)
-	assert.Equal(t, 0*time.Millisecond, config.TypingSpeed)
+	assert.Equal(t, 10*time.Millisecond, config.TypingSpeed)
 	assert.True(t, config.CaptureViews)
 	assert.Equal(t, 3, config.MaxRetries)
 }

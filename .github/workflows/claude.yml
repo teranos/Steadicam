@@ -1,0 +1,36 @@
+name: Claude Code CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  claude-review:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Claude Code
+      uses: anthropics/claude-code-action@v1
+      with:
+        api-key: ${{ secrets.CLAUDE_API_KEY }}
+
+    - name: Code Review with Claude
+      run: |
+        claude-code review --format json --output claude-review.json
+
+    - name: Upload Claude Review Results
+      uses: actions/upload-artifact@v4
+      with:
+        name: claude-review-results
+        path: claude-review.json
+
+    - name: Check for Critical Issues
+      run: |
+        if grep -q "critical\|high" claude-review.json; then
+          echo "Critical or high severity issues found"
+          exit 1
+        fi

@@ -765,6 +765,42 @@ func (d *InteractiveTestDirector) waitForViewChange(previousView string) {
 	// This might be okay for some interactions, so we don't error
 }
 
+// WaitForCondition waits for a custom condition to be true on the model
+func (d *InteractiveTestDirector) WaitForCondition(condition string) *InteractiveTestDirector {
+	timeout := time.After(d.config.Timeout)
+	ticker := time.NewTicker(10 * time.Millisecond)
+	defer ticker.Stop()
+
+	d.t.Logf("[TRACE] WaitForCondition: Waiting for condition '%s' with timeout=%v", condition, d.config.Timeout)
+
+	for {
+		select {
+		case <-timeout:
+			d.recordError(newTestError("timeout", fmt.Sprintf("Timeout waiting for condition: %s", condition), map[string]interface{}{"condition": condition, "timeout": d.config.Timeout}))
+			return d
+		case <-ticker.C:
+			if d.latestModel.CheckCondition(condition) {
+				d.t.Logf("[TRACE] WaitForCondition: Condition '%s' satisfied", condition)
+				d.recordInteraction("wait_condition", condition)
+				d.captureSnapshot("condition_met")
+				return d
+			}
+		}
+	}
+}
+
+// CheckCondition verifies that a condition is currently true on the model
+func (d *InteractiveTestDirector) CheckCondition(condition string) *InteractiveTestDirector {
+	if !d.latestModel.CheckCondition(condition) {
+		d.recordError(newTestError("assertion", fmt.Sprintf("Condition check failed: %s", condition), map[string]interface{}{"condition": condition}))
+		return d
+	}
+
+	d.t.Logf("[TRACE] CheckCondition: Condition '%s' is true", condition)
+	d.recordInteraction("check_condition", condition)
+	return d
+}
+
 // GetInteractionCount returns the number of recorded interactions
 func (d *InteractiveTestDirector) GetInteractionCount() int {
 	return len(d.interactions)
