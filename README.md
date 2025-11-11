@@ -1,4 +1,4 @@
-# 🎬 Steadicam - BubbleTea Testing Framework
+# 🎬 Steadicam - BubbleTea Visual QA Framework
 
 **Smooth, cinematic testing for your terminal applications.**
 
