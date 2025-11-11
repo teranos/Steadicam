@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.TestName}} - Stream Test Report</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #0d1117;
+            color: #e6edf3;
+            line-height: 1.4;
+        }
+
+        .header {
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0 0 8px 0;
+            font-size: 24px;
+            font-weight: 600;
+            color: #f0f6fc;
+        }
+
+        .test-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            font-size: 14px;
+            color: #8b949e;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .meta-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #656d76;
+        }
+
+        .meta-value {
+            font-weight: 500;
+            color: #e6edf3;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+            height: 600px;
+        }
+
+        .terminal-container {
+            background: #000;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            padding: 12px;
+            overflow: hidden;
+        }
+
+        #terminalScreen {
+            width: 100%;
+            height: 100%;
+        }
+
+        .controls-panel {
+            background: #161b22;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            padding: 16px;
+        }
+
+        .controls-section {
+            margin-bottom: 20px;
+        }
+
+        .controls-section h3 {
+            margin: 0 0 12px 0;
+            font-size: 14px;
+            color: #f0f6fc;
+            font-weight: 600;
+        }
+
+        .control-btn {
+            background: #238636;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .control-btn:hover {
+            background: #2ea043;
+        }
+
+        .control-btn:disabled {
+            background: #656d76;
+            cursor: not-allowed;
+        }
+
+        .control-btn.playing {
+            background: #da3633;
+        }
+
+        .control-btn.playing:hover {
+            background: #f85149;
+        }
+
+        .speed-control {
+            margin-top: 8px;
+        }
+
+        .speed-control select {
+            background: #21262d;
+            border: 1px solid #30363d;
+            color: #e6edf3;
+            padding: 6px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .progress-container {
+            margin-top: 12px;
+        }
+
+        .progress-bar {
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 4px;
+            height: 8px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: #238636;
+            height: 100%;
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+
+        .time-display {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #8b949e;
+        }
+
+        .keyboard-help {
+            margin-top: 20px;
+            padding: 12px;
+            background: #0d1117;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            font-size: 12px;
+            color: #8b949e;
+        }
+
+        .keyboard-help h4 {
+            margin: 0 0 8px 0;
+            font-size: 12px;
+            color: #f0f6fc;
+        }
+
+        .keyboard-help kbd {
+            background: #21262d;
+            border: 1px solid #30363d;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-family: monospace;
+            color: #e6edf3;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: 400px auto;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" />
+    <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.js"></script>
+</head>
+<body>
+    <div class="header">
+        <div style="margin-bottom: 8px;">
+            <a href="../../index.html" style="color: #79c0ff; text-decoration: none; font-size: 12px;">← Back to Dashboard</a>
+        </div>
+
+        <h1>{{.TestName}}</h1>
+
+        <div class="test-meta">
+            <div class="meta-item">
+                <span class="meta-label">Status</span>
+                <span class="meta-value" style="color: {{if .Success}}#3fb950{{else}}#f85149{{end}};">
+                    {{if .Success}}✅ PASSED{{else}}❌ FAILED{{end}}
+                </span>
+            </div>
+
+            <div class="meta-item">
+                <span class="meta-label">Duration</span>
+                <span class="meta-value">{{printf "%.0f" (mul .Duration.Seconds 1000)}}ms</span>
+            </div>
+
+            <div class="meta-item">
+                <span class="meta-label">Test Type</span>
+                <span class="meta-value">{{index .Metadata "test_type"}}</span>
+            </div>
+
+            <div class="meta-item">
+                <span class="meta-label">Events</span>
+                <span class="meta-value">{{index .Metadata "event_count"}}</span>
+            </div>
+
+            <div class="meta-item">
+                <span class="meta-label">Timestamp</span>
+                <span class="meta-value">{{.Timestamp}}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="terminal-container">
+            <div id="terminalScreen"></div>
+        </div>
+
+        <div class="controls-panel">
+            <div class="controls-section">
+                <h3>Stream Controls</h3>
+                <button id="streamPlayBtn" class="control-btn">Play Stream</button>
+                <button id="streamResetBtn" class="control-btn">Reset</button>
+
+                <div class="speed-control">
+                    <label style="font-size: 12px; color: #8b949e;">Speed:</label>
+                    <select id="speedSelect" onchange="changePlaybackSpeed(this.value)">
+                        <option value="0.25">0.25x</option>
+                        <option value="0.5">0.5x</option>
+                        <option value="1" selected>1x</option>
+                        <option value="2">2x</option>
+                        <option value="4">4x</option>
+                        <option value="8">8x</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="controls-section">
+                <h3>Progress</h3>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div id="streamProgress" class="progress-fill"></div>
+                    </div>
+                    <div id="streamTime" class="time-display">0ms / 0ms</div>
+                </div>
+            </div>
+
+            <div class="keyboard-help">
+                <h4>Keyboard Controls</h4>
+                <div><kbd>Space</kbd> Play/Pause</div>
+                <div><kbd>R</kbd> Reset</div>
+                <div><kbd>←/→</kbd> Seek (when paused)</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="stream_events.js"></script>
+    <script src="terminal-state-player.js"></script>
+    <script>
+        // Auto-start playback after initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up control event handlers
+            document.getElementById('streamPlayBtn').addEventListener('click', playStateStream);
+            document.getElementById('streamResetBtn').addEventListener('click', resetStateStream);
+
+            // Auto-start after 1 second
+            setTimeout(() => {
+                if (!isPlaying && typeof terminalStates !== 'undefined' && terminalStates.length > 0) {
+                    console.log('Auto-starting state playback...');
+                    playStateStream();
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

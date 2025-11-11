@@ -1,0 +1,52 @@
+package operators
+
+import (
+	"os"
+	"path/filepath"
+	"testing"
+	"time"
+)
+
+func TestTermshotOperator_KeypressByKeypress(t *testing.T) {
+	t.Log("🎹 Testing character-by-character keypress visualization...")
+
+	// Create unique output directory
+	timestamp := time.Now().Format("20060102_150405")
+	outputDir := filepath.Join("tmp", "keypress-demo", timestamp)
+
+	// Ensure clean directory
+	os.RemoveAll(outputDir)
+
+	// Create the operator
+	operator := NewTermshotOperator(t, outputDir)
+
+	// Start without teatest model for screenshot-only mode
+	operator.StartReportOnly()
+
+	// Initial state
+	operator.CaptureRealScreenshot("initial_state")
+
+	// Type "Go" character by character with screenshots for each keypress
+	operator.TypeCharacterByCharacter("Go", "typing")
+
+	// Short pause then press enter
+	operator.Sleep(300 * time.Millisecond)
+	operator.PressEnterWithScreenshot("enter_pressed")
+
+	// Stop and generate report
+	result := operator.Stop()
+
+	// Verify test completed successfully
+	if !result.Success {
+		t.Fatalf("❌ Test failed: %v", result.Error)
+	}
+
+	t.Logf("✅ Keypress-by-keypress test completed")
+	t.Logf("📊 Report available at: %s/index.html", outputDir)
+	t.Logf("🎹 Duration: %v", result.Duration)
+	t.Logf("📸 Should show individual keypress screenshots")
+
+	// Count generated screenshots
+	screenshots, _ := filepath.Glob(filepath.Join(outputDir, "*.png"))
+	t.Logf("📸 Generated %d screenshots total", len(screenshots))
+}

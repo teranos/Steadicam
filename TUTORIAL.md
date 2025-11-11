@@ -14,7 +14,7 @@ package main
 import (
     "strings"
     tea "github.com/charmbracelet/bubbletea"
-    "github.com/teranos/steadicam"
+    "github.com/sbvh/qntx/cmd/repl/bubble/steadicam"
 )
 
 type SimpleREPL struct {

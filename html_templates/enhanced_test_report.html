@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.TestName}} - Visual Test Report</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #24292f;
+            line-height: 1.5;
+        }
+
+        /* Compact Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .test-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 14px;
+            opacity: 0.95;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-success { color: #28a745; }
+        .status-failed { color: #dc3545; }
+
+        /* Slideshow Container */
+        .slideshow-container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .slideshow-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .slideshow-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .control-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-1px);
+        }
+
+        .control-btn.playing {
+            background: #28a745;
+        }
+
+        /* Screenshot Display */
+        .screenshot-viewer {
+            position: relative;
+            background: #1a1a1a;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .screenshot-frame {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .screenshot-frame.active {
+            display: flex;
+        }
+
+        .screenshot-img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            margin-bottom: 15px;
+        }
+
+        .screenshot-info {
+            color: #e9ecef;
+            text-align: center;
+        }
+
+        .screenshot-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .screenshot-desc {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            background: #343a40;
+            border-radius: 10px;
+            height: 6px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        /* Thumbnail Navigation */
+        .thumbnail-nav {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .thumbnail {
+            width: 120px;
+            height: 80px;
+            border-radius: 6px;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+            object-fit: cover;
+        }
+
+        .thumbnail:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+
+        .thumbnail.active {
+            opacity: 1;
+            border-color: #667eea;
+        }
+
+        /* Stats Panel */
+        .stats-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #6c757d;
+        }
+
+        @media (max-width: 768px) {
+            .test-meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .slideshow-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div style="margin-bottom: 15px;">
+            <a href="../../index.html" style="color: white; text-decoration: none; font-size: 14px; padding: 6px 12px; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; background: rgba(255,255,255,0.1);">← Back to Dashboard</a>
+        </div>
+        <h1>🎬 {{.TestName}}</h1>
+        <div class="test-meta">
+            <div class="meta-item">
+                📅 <strong>{{.Timestamp}}</strong>
+            </div>
+            <div class="meta-item">
+                ⚡ <strong>{{printf "%.0fms" (mul .Duration.Seconds 1000)}}</strong>
+            </div>
+            <div class="meta-item">
+                {{if .Success}}
+                    <span class="status-success">✅ PASSED</span>
+                {{else}}
+                    <span class="status-failed">❌ FAILED</span>
+                {{end}}
+            </div>
+            <div class="meta-item">
+                📸 <strong>{{len .Screenshots}} screenshots</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="slideshow-container">
+        <div class="slideshow-header">
+            <h2>Visual Test Flow</h2>
+            <div class="slideshow-controls">
+                <button class="control-btn" id="playBtn" onclick="toggleSlideshow()">▶️ Play</button>
+                <button class="control-btn" onclick="prevSlide()">◀️ Previous</button>
+                <button class="control-btn" onclick="nextSlide()">▶️ Next</button>
+                <button class="control-btn" onclick="resetSlideshow()">🔄 Reset</button>
+            </div>
+        </div>
+
+        <div class="screenshot-viewer">
+            {{range $index, $screenshot := .Screenshots}}
+            <div class="screenshot-frame" data-index="{{$index}}">
+                <img src="{{$screenshot.DataURL}}" alt="{{$screenshot.Label}}" class="screenshot-img">
+                <div class="screenshot-info">
+                    <div class="screenshot-title">{{$screenshot.Label | title | replace "_" " "}}</div>
+                    <div class="screenshot-desc">{{$screenshot.Description}}</div>
+                </div>
+            </div>
+            {{end}}
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="thumbnail-nav">
+            {{range $index, $screenshot := .Screenshots}}
+            <img src="{{$screenshot.DataURL}}"
+                 alt="{{$screenshot.Label}}"
+                 class="thumbnail"
+                 data-index="{{$index}}"
+                 onclick="goToSlide({{$index}})">
+            {{end}}
+        </div>
+    </div>
+
+    <div class="stats-panel">
+        <h3>Test Statistics</h3>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-value">{{printf "%.0f" (mul .Duration.Seconds 1000)}}</div>
+                <div class="stat-label">Execution Time (ms)</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">{{len .Screenshots}}</div>
+                <div class="stat-label">Screenshots Captured</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">{{len .Interactions}}</div>
+                <div class="stat-label">Interactions Recorded</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">{{if .Success}}100{{else}}0{{end}}%</div>
+                <div class="stat-label">Success Rate</div>
+            </div>
+        </div>
+    </div>
+
+    {{if .Interactions}}
+    <div class="stats-panel" style="margin-top: 20px;">
+        <h3>Test Execution Log</h3>
+        <div style="max-height: 400px; overflow-y: auto; font-family: ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace; font-size: 12px;">
+        {{range .Interactions}}
+            <div style="margin: 8px 0; padding: 8px; border-left: 3px solid {{if eq .Type "screenshot_error"}}#dc3545{{else if eq .Type "real_screenshot"}}#28a745{{else}}#667eea{{end}}; background: #f8f9fa;">
+                <div><strong>{{.Timestamp.Format "15:04:05.000"}}</strong> - {{.Type}}</div>
+                {{if eq .Type "screenshot_error"}}
+                    <div style="margin-top: 4px; color: #dc3545;">
+                        <strong>⚠️ Screenshot Generation Failed</strong><br>
+                        {{if .Details.label}}<strong>Label:</strong> {{.Details.label}}<br>{{end}}
+                        {{if .Details.error}}<strong>Error:</strong> <code>{{.Details.error}}</code><br>{{end}}
+                        {{if .Details.output}}<strong>Output:</strong> <code style="background: #fff; padding: 2px 4px; border-radius: 2px;">{{.Details.output}}</code>{{end}}
+                    </div>
+                {{else if eq .Type "real_screenshot"}}
+                    <div style="color: #28a745;">📸 Screenshot: {{.Details}}</div>
+                {{else}}
+                    <div style="color: #666;">{{.Details}}</div>
+                {{end}}
+            </div>
+        {{end}}
+        </div>
+    </div>
+    {{end}}
+
+    <script>
+        let currentSlide = 0;
+        let isPlaying = false;
+        let slideInterval;
+        const totalSlides = {{len .Screenshots}};
+        const slideDuration = 2000; // 2 seconds per slide
+
+        function showSlide(index) {
+            // Hide all frames
+            document.querySelectorAll('.screenshot-frame').forEach(frame => {
+                frame.classList.remove('active');
+            });
+
+            // Show current frame
+            const currentFrame = document.querySelector(`[data-index="${index}"]`);
+            if (currentFrame) {
+                currentFrame.classList.add('active');
+            }
+
+            // Update thumbnails
+            document.querySelectorAll('.thumbnail').forEach(thumb => {
+                thumb.classList.remove('active');
+            });
+            const currentThumb = document.querySelector(`.thumbnail[data-index="${index}"]`);
+            if (currentThumb) {
+                currentThumb.classList.add('active');
+            }
+
+            // Update progress bar
+            const progress = ((index + 1) / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            showSlide(currentSlide);
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            showSlide(currentSlide);
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            showSlide(currentSlide);
+        }
+
+        function toggleSlideshow() {
+            const playBtn = document.getElementById('playBtn');
+
+            if (isPlaying) {
+                clearInterval(slideInterval);
+                playBtn.textContent = '▶️ Play';
+                playBtn.classList.remove('playing');
+                isPlaying = false;
+            } else {
+                slideInterval = setInterval(nextSlide, slideDuration);
+                playBtn.textContent = '⏸️ Pause';
+                playBtn.classList.add('playing');
+                isPlaying = true;
+            }
+        }
+
+        function resetSlideshow() {
+            if (isPlaying) {
+                toggleSlideshow();
+            }
+            currentSlide = 0;
+            showSlide(currentSlide);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            if (totalSlides > 0) {
+                showSlide(0);
+                // Auto-start slideshow
+                setTimeout(() => {
+                    toggleSlideshow();
+                }, 1000);
+            }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case 'ArrowRight':
+                case ' ':
+                    e.preventDefault();
+                    nextSlide();
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    prevSlide();
+                    break;
+                case 'Escape':
+                    if (isPlaying) {
+                        toggleSlideshow();
+                    }
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>

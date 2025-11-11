@@ -7,7 +7,7 @@ Steadicam provides automated testing for [BubbleTea](https://github.com/charmbra
 ## Quick Start
 
 ```bash
-go get github.com/teranos/steadicam
+go get github.com/your-org/steadicam
 ```
 
 ## Basic Example
@@ -71,32 +71,10 @@ type REPLModel interface {
 - 📸 **Visual testing** - Automated screenshots and tracking shots
 - 🎬 **Smooth operator** - Fluid test execution like Kubrick's cinematography
 
-## Getting Started
-
-1. **Install steadicam:**
-   ```bash
-   go get github.com/teranos/steadicam
-   ```
-
-2. **Implement the REPLModel interface** in your BubbleTea application
-3. **Write tests** using the Director for basic testing or Operator for visual testing
-4. **Run tests** and view generated screenshots in the output directory
-
 ## Documentation
 
-- [TUTORIAL.md](TUTORIAL.md) - Comprehensive guide with examples
-- [examples/](examples/) - Complete working examples
-- See the GoDoc for detailed API documentation
-
-## Requirements
-
-- Go 1.22 or later
-- Your application must use [BubbleTea](https://github.com/charmbracelet/bubbletea) framework
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+See [examples/](examples/) for complete working examples.
 
 ## License
 
-MIT - see LICENSE file for details
+MIT

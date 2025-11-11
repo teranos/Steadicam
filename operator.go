@@ -5,12 +5,14 @@ import (
 	"image/color"
 	"testing"
 	"time"
+
+	"github.com/sbvh/qntx/cmd/repl/bubble/steadicam/trip"
 )
 
-// Operator extends InteractiveTestDirector with smooth visual tracking capabilities
+// Operator extends StageDirector with smooth visual tracking capabilities
 // Kubrick's steadicam operator capturing fluid UI movement without jarring cuts
 type Operator struct {
-	*InteractiveTestDirector
+	*StageDirector
 	renderingStage *RenderingStage
 	frameCount     int
 	filmDir        string
@@ -28,10 +30,10 @@ func NewOperator(t *testing.T, model REPLModel, outputDir string) *Operator {
 		OutputDir:  outputDir,
 	}
 
-	baseDirector := NewInteractiveTestDirector(t, model)
+	baseDirector := NewStageDirector(t, model)
 
 	return &Operator{
-		InteractiveTestDirector: baseDirector,
+		StageDirector: baseDirector,
 		renderingStage: NewRenderingStage(config),
 		frameCount:     0,
 		filmDir:        outputDir,
@@ -47,31 +49,31 @@ func (op *Operator) WithConfig(config Config) *Operator {
 
 // WithTimeout wraps the base WithTimeout method to return *Operator
 func (op *Operator) WithTimeout(timeout time.Duration) *Operator {
-	op.InteractiveTestDirector.WithTimeout(timeout)
+	op.StageDirector.WithTimeout(timeout)
 	return op
 }
 
 // Start wraps the base Start method to return *Operator
 func (op *Operator) Start() *Operator {
-	op.InteractiveTestDirector.Start()
+	op.StageDirector.Start()
 	return op
 }
 
 // WaitForSearchResults wraps the base method to return *Operator
 func (op *Operator) WaitForSearchResults() *Operator {
-	op.InteractiveTestDirector.WaitForSearchResults()
+	op.StageDirector.WaitForSearchResults()
 	return op
 }
 
 // WaitForText wraps the base method to return *Operator
 func (op *Operator) WaitForText(text string) *Operator {
-	op.InteractiveTestDirector.WaitForText(text)
+	op.StageDirector.WaitForText(text)
 	return op
 }
 
-// Stop wraps the base method to return test result
-func (op *Operator) Stop() *TestResult {
-	return op.InteractiveTestDirector.Stop()
+// Stop wraps the base method to return stage result
+func (op *Operator) Stop() *StageResult {
+	return op.StageDirector.Stop()
 }
 
 // CaptureTrackingShot captures the current visual state as a smooth film frame
@@ -92,8 +94,10 @@ func (op *Operator) CaptureTrackingShot(label string) *Operator {
 
 	// Save frame
 	if err := op.renderingStage.CaptureFrame(filename); err != nil {
-			// For now, just print the error - we could enhance this later
-		fmt.Printf("Failed to capture frame: %v\n", err)
+		// Camera jam is fatal - stop everything
+		cameraTrip := trip.NewFall("visual", fmt.Sprintf("Camera seizure during frame capture: %v", err),
+			trip.Context{"filename": filename, "frame_count": op.frameCount, "original_error": err.Error()})
+		op.StageDirector.recordTrip(cameraTrip)
 		return op
 	}
 

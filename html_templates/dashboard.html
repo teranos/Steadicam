@@ -14,28 +14,36 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 16px;
-            background: #ffffff;
-            color: #24292f;
+            background: #0d1117;
+            color: #e6edf3;
             line-height: 1.5;
         }
 
         .header {
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             padding-bottom: 16px;
-            border-bottom: 1px solid #d1d9e0;
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .header h1 {
-            margin: 0 0 8px 0;
-            font-size: 24px;
+        .header-content h1 {
+            margin: 0 0 4px 0;
+            font-size: 20px;
             font-weight: 600;
-            color: #24292f;
+            color: #f0f6fc;
         }
 
-        .header p {
+        .header-content p {
             margin: 0;
-            color: #656d76;
-            font-size: 14px;
+            color: #8b949e;
+            font-size: 13px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
         }
 
         .reports-table {
@@ -44,25 +52,33 @@
             margin-top: 16px;
         }
 
+        .reports-table {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
         .reports-table th {
             text-align: left;
             padding: 8px 12px;
-            border-bottom: 2px solid #d1d9e0;
+            border-bottom: 1px solid #30363d;
             font-weight: 600;
-            font-size: 12px;
+            font-size: 11px;
             text-transform: uppercase;
-            color: #656d76;
+            color: #7d8590;
             letter-spacing: 0.5px;
+            background: #21262d;
         }
 
         .reports-table td {
             padding: 8px 12px;
-            border-bottom: 1px solid #f6f8fa;
+            border-bottom: 1px solid #21262d;
             vertical-align: middle;
         }
 
         .reports-table tr:hover {
-            background-color: #f6f8fa;
+            background-color: #21262d;
         }
 
         .status-icon {
@@ -73,7 +89,7 @@
 
         .report-name {
             font-weight: 500;
-            color: #24292f;
+            color: #e6edf3;
         }
 
         .report-name a {
@@ -83,50 +99,81 @@
 
         .report-name a:hover {
             text-decoration: underline;
+            color: #79c0ff;
         }
 
         .report-timestamp {
             font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
-            font-size: 12px;
-            color: #656d76;
+            font-size: 11px;
+            color: #8b949e;
         }
 
         .report-duration {
             font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
-            font-size: 12px;
-            color: #656d76;
+            font-size: 11px;
+            color: #8b949e;
             text-align: right;
         }
 
         .report-screenshots {
-            font-size: 12px;
-            color: #656d76;
+            font-size: 11px;
+            color: #8b949e;
             text-align: right;
         }
 
         .view-link {
-            color: #0969da;
+            color: #79c0ff;
             text-decoration: none;
-            font-size: 12px;
+            font-size: 11px;
             padding: 4px 8px;
-            border: 1px solid #d1d9e0;
+            border: 1px solid #30363d;
             border-radius: 4px;
-            background: #ffffff;
+            background: #21262d;
         }
 
         .view-link:hover {
-            background-color: #f3f4f6;
+            background-color: #30363d;
+            border-color: #79c0ff;
+        }
+
+        .btn {
+            color: #e6edf3;
+            text-decoration: none;
+            font-size: 12px;
+            padding: 6px 12px;
+            border: 1px solid #30363d;
+            border-radius: 4px;
+            background: #21262d;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #30363d;
+            border-color: #388bfd;
+        }
+
+        .btn-primary {
+            background: #0969da;
             border-color: #0969da;
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: #0860ca;
+            border-color: #0860ca;
         }
 
         .empty-state {
             padding: 48px 16px;
             text-align: center;
-            color: #656d76;
+            color: #8b949e;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
         }
 
         .empty-state h3 {
-            color: #24292f;
+            color: #f0f6fc;
             font-size: 16px;
             margin: 0 0 8px 0;
         }
@@ -137,18 +184,125 @@
         }
 
         .empty-state code {
-            background: #f6f8fa;
+            background: #21262d;
             padding: 2px 4px;
             border-radius: 3px;
             font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
             font-size: 12px;
+            color: #f0883e;
+        }
+
+        /* Test Editor Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: relative;
+            margin: 2% auto;
+            width: 90%;
+            max-width: 900px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 16px;
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: #f0f6fc;
+            font-size: 16px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #8b949e;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .close-btn:hover {
+            color: #f85149;
+        }
+
+        .modal-body {
+            padding: 16px;
+        }
+
+        .editor-section {
+            margin-bottom: 16px;
+        }
+
+        .editor-section h3 {
+            margin: 0 0 8px 0;
+            color: #f0f6fc;
+            font-size: 14px;
+        }
+
+        .test-editor {
+            width: 100%;
+            height: 200px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 4px;
+            padding: 8px;
+            color: #e6edf3;
+            font-family: ui-monospace, SFMono-Regular, 'SF Mono', Consolas, monospace;
+            font-size: 12px;
+            resize: vertical;
+        }
+
+        .key-buttons {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .key-btn {
+            background: #21262d;
+            border: 1px solid #30363d;
+            color: #e6edf3;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .key-btn:hover {
+            background: #30363d;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>qntx Test Dashboard</h1>
-        <p>Interactive test reports and visual regression tracking</p>
+        <div class="header-content">
+            <h1>qntx Test Dashboard</h1>
+            <p>Interactive test reports and visual regression tracking</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn btn-primary" onclick="openTestEditor()">Create Test</button>
+            <button class="btn" onclick="runQuickTest()">Quick Test</button>
+            <button class="btn" onclick="location.reload()">Refresh</button>
+        </div>
     </div>
 
     {{if .Reports}}
@@ -184,12 +338,151 @@
     </div>
     {{end}}
 
+    <!-- Test Editor Modal -->
+    <div id="testEditorModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Visual Test Editor</h2>
+                <button class="close-btn" onclick="closeTestEditor()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="editor-section">
+                    <h3>Test Name</h3>
+                    <input type="text" id="testName" placeholder="MyInteractiveTest"
+                           style="width: 100%; background: #161b22; border: 1px solid #30363d; padding: 6px; color: #e6edf3; border-radius: 4px;">
+                </div>
+
+                <div class="editor-section">
+                    <h3>Test Steps</h3>
+                    <textarea id="testEditor" class="test-editor"
+                              placeholder="// Write your test steps here...
+// Example:
+operator.CaptureRealScreenshot('initial_state')
+operator.TypeCharacterByCharacter('search query', 'typing')
+operator.PressEnter()
+operator.CaptureRealScreenshot('results')"></textarea>
+
+                    <div class="key-buttons">
+                        <button class="key-btn" onclick="insertKey('Tab')">Tab</button>
+                        <button class="key-btn" onclick="insertKey('Enter')">Enter</button>
+                        <button class="key-btn" onclick="insertKey('Shift')">Shift</button>
+                        <button class="key-btn" onclick="insertKey('Ctrl')">Ctrl</button>
+                        <button class="key-btn" onclick="insertKey('Alt')">Alt</button>
+                        <button class="key-btn" onclick="insertKey('Escape')">Escape</button>
+                        <button class="key-btn" onclick="insertKey('ArrowUp')">↑</button>
+                        <button class="key-btn" onclick="insertKey('ArrowDown')">↓</button>
+                        <button class="key-btn" onclick="insertKey('ArrowLeft')">←</button>
+                        <button class="key-btn" onclick="insertKey('ArrowRight')">→</button>
+                    </div>
+                </div>
+
+                <div class="editor-section">
+                    <h3>Prefill Options</h3>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button class="btn" onclick="prefillBasicTest()">Basic Search Test</button>
+                        <button class="btn" onclick="prefillKeypressTest()">Keypress Test</button>
+                        <button class="btn" onclick="prefillAttestationTest()">Attestation Test</button>
+                    </div>
+                </div>
+
+                <div style="margin-top: 16px; display: flex; gap: 8px; justify-content: flex-end;">
+                    <button class="btn" onclick="closeTestEditor()">Cancel</button>
+                    <button class="btn btn-primary" onclick="runCustomTest()">Run Test</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Simple keyboard shortcuts
+        // Test Editor Functions
+        function openTestEditor() {
+            document.getElementById('testEditorModal').style.display = 'block';
+        }
+
+        function closeTestEditor() {
+            document.getElementById('testEditorModal').style.display = 'none';
+        }
+
+        function insertKey(key) {
+            const editor = document.getElementById('testEditor');
+            const cursorPos = editor.selectionStart;
+            const textBefore = editor.value.substring(0, cursorPos);
+            const textAfter = editor.value.substring(editor.selectionEnd);
+            const insertion = `operator.PressKey('${key}')`;
+            editor.value = textBefore + insertion + textAfter;
+            editor.focus();
+            editor.selectionStart = editor.selectionEnd = cursorPos + insertion.length;
+        }
+
+        function prefillBasicTest() {
+            document.getElementById('testName').value = 'BasicSearchTest';
+            document.getElementById('testEditor').value =
+`operator.CaptureRealScreenshot('initial_state')
+operator.Type('Rob Pike')
+operator.CaptureRealScreenshot('typing_complete')
+operator.PressEnter()
+operator.CaptureRealScreenshot('search_results')`;
+        }
+
+        function prefillKeypressTest() {
+            document.getElementById('testName').value = 'KeypressTest';
+            document.getElementById('testEditor').value =
+`operator.CaptureRealScreenshot('initial_state')
+operator.TypeCharacterByCharacter('Go', 'typing')
+operator.PressEnter()
+operator.CaptureRealScreenshot('command_executed')`;
+        }
+
+        function prefillAttestationTest() {
+            document.getElementById('testName').value = 'AttestationTest';
+            document.getElementById('testEditor').value =
+`// Test with attestation data
+operator.CaptureRealScreenshot('initial_state')
+operator.Type('subject:"Rob Pike" predicate:"created" object:"Go language"')
+operator.CaptureRealScreenshot('attestation_query')
+operator.PressEnter()
+operator.CaptureRealScreenshot('attestation_results')`;
+        }
+
+        function runCustomTest() {
+            const testName = document.getElementById('testName').value || 'CustomTest';
+            const testCode = document.getElementById('testEditor').value;
+
+            if (!testCode.trim()) {
+                alert('Please enter test steps');
+                return;
+            }
+
+            // For now, show what would be generated
+            alert(`Custom test "${testName}" would be generated and executed.\nTest code:\n${testCode}`);
+            closeTestEditor();
+        }
+
+        function runQuickTest() {
+            // Trigger a quick keypress demo test
+            alert('Running quick keypress demo test...');
+        }
+
+        // Keyboard shortcuts
         document.addEventListener('keydown', function(e) {
             if (e.key === 'r' && (e.metaKey || e.ctrlKey)) {
                 e.preventDefault();
                 location.reload();
+            }
+            if (e.key === 'Escape') {
+                closeTestEditor();
+            }
+            if (e.key === 'n' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault();
+                openTestEditor();
+            }
+        });
+
+        // Click outside modal to close
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('testEditorModal');
+            if (e.target === modal) {
+                closeTestEditor();
             }
         });
     </script>
