@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The steadicam package provides **visual test inspection and Quality Control/Quality Assurance (QCQA)** for the qntx REPL and terminal applications. Its primary mission is to capture and document actual user interactions with real terminal interfaces. It is written in Go
+The steadicam package provides **visual test inspection and Quality Control/Quality Assurance (QCQA)** for the qntx REPL and terminal applications. Its primary mission is to capture and document actual user interactions with PTY. It is written in Go and is open-source.
 
 ## Core Principles
 
@@ -18,7 +18,7 @@ The steadicam package provides **visual test inspection and Quality Control/Qual
 - Generate comprehensive visual reports that accurately represent user experience
 
 ### 3. Thorough Quality Assurance
-- Character-by-character typing to demonstrate live search behavior
+- Character-by-character typing to demonstrate live behavior
 - Capture every stage of user interaction for complete QCQA coverage
 - Document real timing and performance characteristics down to the milisecond 
 
@@ -56,16 +56,7 @@ The steadicam package provides **visual test inspection and Quality Control/Qual
 - Visual reports must accurately represent terminal appearance
 - All interactions must be captured for complete quality documentation
 - Long test duration is acceptable to ensure thorough coverage
-- Real-time search behavior must be visually documented
-
-## Anti-Patterns
-
-❌ **Never use these approaches:**
-- Mock REPL implementations
-- Fake ANSI output generation
-- Simulated terminal interactions
-- Hardcoded search results
-- Shortened tests that miss interaction details
+- Real-time behavior must be visually documented
 
 ✅ **Always use these approaches:**
 - Real binary execution
